@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Umbrala</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#7a7cff">
+</head>
+
+<body class="page center">
+  <h1>Umbrala</h1>
+  <p class="subtitle">Conversaciones anónimas que desaparecen</p>
+  <button onclick="location.href='rooms.html'">Entrar</button>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+  </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Salas · Umbrala</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="page center">
+  <h2>Salas</h2>
+  <p style="opacity:.5;font-size:13px">Elige una sala</p>
+
+  <div class="room" onclick="enter('chile')">🇨🇱 Chile</div>
+  <div class="room" onclick="enter('la_serena')">🌊 La Serena</div>
+
+  <script>
+    function enter(room) {
+      localStorage.setItem("room", room);
+      location.href = "room.html";
+    }
+  </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sala · Umbrala</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="page chat">
+  <header class="top">
+    <span id="roomName"></span>
+    <button onclick="location.href='rooms.html'">Salir</button>
+  </header>
+
+  <div id="users" class="messages"></div>
+
+  <script type="module" src="room.js"></script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat · Umbrala</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="page chat">
+  <header class="top">
+    <span>Conversación</span>
+    <div>
+      <button onclick="reportUser()">🚨</button>
+      <button onclick="blockUser()">⛔</button>
+      <button onclick="confirmExit()">Salir</button>
+    </div>
+  </header>
+
+  <div id="messages" class="messages"></div>
+  <div id="typing" class="typing"></div>
+
+  <footer class="input-bar">
+    <button id="record">🎤</button>
+    <input type="file" id="file" accept="image/,video/">
+    <input id="text" placeholder="Hablar…" autocomplete="off">
+    <button id="send">Hablar</button>
+  </footer>
+
+  <script type="module" src="private.js"></script>
+</body>
+</html>
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+:root {
+  --bg: #0f1115;
+  --panel: #161922;
+  --soft: #1e2230;
+  --text: #e6e6eb;
+  --muted: #9aa0b3;
+  --accent: #7a7cff;
+  --danger: #ff5c5c;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.page.center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.subtitle {
+  opacity: 0.6;
+  margin-bottom: 18px;
+}
+
+button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: transform 0.1s ease, opacity 0.1s;
+}
+
+button:hover {
+  transform: scale(1.04);
+  opacity: 0.9;
+}
+
+input[type="text"],
+input[type="file"] {
+  background: var(--soft);
+  border: none;
+  color: var(--text);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+input::placeholder {
+  color: var(--muted);
+}
+
+.room {
+  background: var(--panel);
+  width: 220px;
+  padding: 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  animation: fadeIn 0.3s ease;
+}
+
+.room:hover {
+  background: var(--soft);
+}
+
+.page.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header.top {
+  background: var(--panel);
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #222;
+}
+
+header.top span {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.messages {
+  flex: 1;
+  padding: 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.messages div {
+  background: var(--panel);
+  padding: 10px;
+  border-radius: 12px;
+  max-width: 80%;
+  animation: fadeIn 0.2s ease;
+}
+
+.typing {
+  font-size: 12px;
+  color: var(--muted);
+  margin-left: 12px;
+  margin-bottom: 6px;
+  font-style: italic;
+}
+
+footer.input-bar {
+  background: var(--panel);
+  padding: 10px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  border-top: 1px solid #222;
+}
+
+footer input[type="text"] {
+  flex: 1;
+}
+
+img, video, audio {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 6px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROJECT.firebaseapp.com",
+  projectId: "TU_PROJECT",
+  storageBucket: "TU_PROJECT.appspot.com"
+};
+
+export const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const storage = getStorage(app);
+
+import { db } from "./firebase.js";
+import {
+  collection, addDoc, deleteDoc, doc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const room = localStorage.getItem("room");
+roomName.textContent = room;
+
+const alias = "Sombra " + Math.floor(Math.random() * 999);
+localStorage.setItem("alias", alias);
+
+const usersRef = collection(db, "rooms", room, "users");
+const me = await addDoc(usersRef, { alias });
+
+onSnapshot(usersRef, snap => {
+  users.innerHTML = "";
+  snap.forEach(d => {
+    if (d.id === me.id) return;
+    const div = document.createElement("div");
+    div.textContent = d.data().alias;
+    div.onclick = () => {
+      localStorage.setItem("privateUser", d.data().alias);
+      location.href = "private.html";
+    };
+    users.appendChild(div);
+  });
+});
+
+window.addEventListener("beforeunload", async () => {
+  await deleteDoc(doc(db, "rooms", room, "users", me.id));
+});
+
+import { db, storage } from "./firebase.js";
+import {
+  collection, addDoc, onSnapshot, serverTimestamp,
+  doc, setDoc, getDoc, deleteDoc, getDocs
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  ref, uploadBytes, getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+const myAlias = localStorage.getItem("alias");
+const otherId = localStorage.getItem("privateUser");
+
+const chatId = [myAlias, otherId].sort().join("_");
+const messagesRef = collection(db, "private", chatId, "messages");
+const typingRef = doc(db, "private", chatId, "typing", "status");
+
+const DAY = 24 * 60 * 60 * 1000;
+
+/* 🔒 BLOQUEOS */
+const blocked = await getDoc(doc(db, "blocks", myAlias, "users", otherId));
+if (blocked.exists()) location.href = "room.html";
+
+const blockedByOther = await getDoc(doc(db, "blocks", otherId, "users", myAlias));
+if (blockedByOther.exists()) location.href = "room.html";
+
+/* ✍️ ESCRIBIENDO */
+let typingTimeout;
+text.oninput = () => {
+  setDoc(typingRef, { user: myAlias, typing: true });
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    setDoc(typingRef, { user: myAlias, typing: false });
+  }, 1200);
+};
+
+/* 🎤 AUDIO */
+let recorder;
+let chunks = [];
+
+record.onmousedown = async () => {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  recorder = new MediaRecorder(stream);
+  chunks = [];
+  recorder.ondataavailable = e => chunks.push(e.data);
+  recorder.start();
+};
+
+record.onmouseup = () => recorder.stop();
+
+recorder?.onstop;
+
+/* 📤 ENVIAR */
+send.onclick = async () => {
+  if (!text.value && !file.files[0]) return;
+
+  let media = null;
+  let type = null;
+
+  if (file.files[0]) {
+    const f = file.files[0];
+    type = f.type.startsWith("image") ? "image" : "video";
+    const r = ref(storage, private/${chatId}/${Date.now()}_${f.name});
+    await uploadBytes(r, f);
+    media = await getDownloadURL(r);
+  }
+
+  await addDoc(messagesRef, {
+    from: myAlias,
+    text: text.value || "",
+    media,
+    type,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + DAY
+  });
+
+  setDoc(typingRef, { user: myAlias, typing: false });
+  text.value = "";
+  file.value = "";
+};
+
+/* 🎧 AUDIO STOP */
+navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+  recorder = new MediaRecorder(stream);
+  recorder.ondataavailable = e => chunks.push(e.data);
+  recorder.onstop = async () => {
+    const blob = new Blob(chunks, { type: "audio/webm" });
+    const r = ref(storage, private/${chatId}/${Date.now()}.webm);
+    await uploadBytes(r, blob);
+    const url = await getDownloadURL(r);
+    await addDoc(messagesRef, {
+      from: myAlias,
+      audio: url,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + DAY
+    });
+    chunks = [];
+  };
+});
+
+/* 👀 MENSAJES */
+onSnapshot(messagesRef, snap => {
+  messages.innerHTML = "";
+  snap.forEach(d => {
+    const m = d.data();
+    if (m.expiresAt < Date.now()) return;
+
+    const box = document.createElement("div");
+    box.style.alignSelf =
+      m.from === myAlias ? "flex-end" : "flex-start";
+
+    if (m.text) {
+      const p = document.createElement("p");
+      p.textContent = m.text;
+      box.appendChild(p);
+    }
+
+    if (m.media && m.type === "image") {
+      const img = document.createElement("img");
+      img.src = m.media;
+      box.appendChild(img);
+    }
+
+    if (m.media && m.type === "video") {
+      const v = document.createElement("video");
+      v.src = m.media;
+      v.controls = true;
+      box.appendChild(v);
+    }
+
+    if (m.audio) {
+      const a = document.createElement("audio");
+      a.src = m.audio;
+      a.controls = true;
+      box.appendChild(a);
+    }
+
+    messages.appendChild(box);
+  });
+});
+
+/* ✏️ VER ESCRIBIENDO */
+onSnapshot(typingRef, snap => {
+  if (!snap.exists()) return;
+  const d = snap.data();
+  typing.textContent =
+    d.typing && d.user !== myAlias
+      ? ${d.user} está escribiendo…
+      : "";
+});
+
+/* 🚨 REPORTAR */
+window.reportUser = async () => {
+  const reason = prompt("Motivo del reporte:");
+  if (!reason) return;
+
+  await addDoc(collection(db, "reports"), {
+    from: myAlias,
+    reported: otherId,
+    reason,
+    time: Date.now()
+  });
+
+  alert("Reporte enviado.");
+};
+
+/* ⛔ BLOQUEAR */
+window.blockUser = async () => {
+  if (!confirm("¿Bloquear a este usuario?")) return;
+  await setDoc(doc(db, "blocks", myAlias, "users", otherId), { blocked: true });
+  destroyChat();
+};
+
+/* 💣 DESTRUIR CHAT */
+async function destroyChat() {
+  const snap = await getDocs(messagesRef);
+  snap.forEach(async d => await deleteDoc(d.ref));
+  await deleteDoc(typingRef);
+  localStorage.removeItem("privateUser");
+  location.href = "room.html";
+}
+
+window.confirmExit = () => {
+  if (confirm("Al salir, la conversación se destruirá.")) destroyChat();
+};
+
+window.addEventListener("beforeunload", destroyChat);
+
+
+{
+  "name": "Umbrala",
+  "short_name": "Umbrala",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0f1115",
+  "theme_color": "#7a7cff",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
+
+const CACHE = "umbrala-v1";
+const FILES = [
+  "/", "/index.html", "/rooms.html", "/room.html",
+  "/private.html", "/style.css", "/firebase.js"
+];
+
+self.addEventListener("install", e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
+});
+
+self.addEventListener("fetch", e => {
+  e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
+});
